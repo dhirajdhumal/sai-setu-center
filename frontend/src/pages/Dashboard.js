@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Grid, Card, CardContent, Typography,  List,
   ListItem,
   ListItemText, Box } from "@mui/material";
 import api from "../services/api";
+import AuthContext from "../context/authContext";
 
 function Dashboard() {
   const [services, setServices] = useState([]);
+  const {user} = useContext(AuthContext)
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -22,14 +24,14 @@ function Dashboard() {
   return (
     <Box mt={4}>
       <Typography variant="h4" gutterBottom>
-        Available Services
+        Available Services For You, {user.name}
       </Typography>
       <Grid container spacing={3}>
         {services.map((s) => (
           <Grid item xs={12} sm={6} md={4} key={s.serviceId}>
             <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
               <CardContent>
-                <Typography variant="h6" gutterBottom>
+                <Typography variant="h6" fontWeight="bold" gutterBottom>
                   {s.title}
                 </Typography>
                 <Typography variant="body2" color="text.secondary" paragraph>
@@ -38,9 +40,9 @@ function Dashboard() {
                 <Typography variant="subtitle2">Required Documents:</Typography>
                 <List dense>
                   {s.requiredDocuments.map((doc, i) => (
-                    <ListItem key={i} sx={{ pl: 2 }}>
+                    <Typography color="text.secondary"><ListItem key={i} sx={{ pl: 2 }}>
                       <ListItemText primary={`• ${doc}`} />
-                    </ListItem>
+                    </ListItem></Typography>
                   ))}
                 </List>
               </CardContent>

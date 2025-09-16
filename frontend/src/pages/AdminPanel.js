@@ -1,3 +1,158 @@
+// // src/pages/AdminPanel.js
+// import React, { useEffect, useState, useContext } from "react";
+// import {
+//   TextField,
+//   Button,
+//   Typography,
+//   Box,
+//   Grid,
+//   Card,
+//   CardContent,
+//   List,
+//   ListItem,
+//   ListItemText,
+//   CardActions,
+// } from "@mui/material";
+// import api from "../services/api";
+// import DeleteIcon from '@mui/icons-material/Delete';
+// import AuthContext from "../context/authContext";
+
+// function AdminPanel() {
+//   const { user } = useContext(AuthContext);
+//   const [services, setServices] = useState([]);
+//   const [form, setForm] = useState({ title: "", description: "", requiredDocuments: "" });
+
+//   useEffect(() => {
+//     fetchServices();
+//   }, []);
+
+//   const fetchServices = async () => {
+//     try {
+//       const { data } = await api.get("/services");
+//       setServices(data);
+//     } catch (err) {
+//       console.error("Error fetching services:", err);
+//     }
+//   };
+
+//   const handleChange = (e) => {
+//     setForm({ ...form, [e.target.name]: e.target.value });
+//   };
+
+//   const handleCreate = async () => {
+//     try {
+//       await api.post(
+//         "/services",
+//         {
+//           serviceId: Date.now().toString(),
+//           title: form.title,
+//           description: form.description,
+//           requiredDocuments: form.requiredDocuments.split(",").map((doc) => doc.trim()),
+//         },
+//         {
+//           headers: { Authorization: `Bearer ${user.token}` },
+//         }
+//       );
+//       setForm({ title: "", description: "", requiredDocuments: "" });
+//       fetchServices();
+//     } catch (err) {
+//       console.error("Error creating service:", err);
+//     }
+//   };
+
+//   const handleDelete = async (serviceId) => {
+//     try {
+//       await api.delete(`/services/${serviceId}`, {
+//         headers: { Authorization: `Bearer ${user.token}` },
+//       });
+//       setServices(services.filter((s) => s.serviceId !== serviceId));
+//     } catch (err) {
+//       console.error("Error deleting service:", err);
+//     }
+//   };
+//   return (
+//     <Box>
+//       <Typography variant="h4" gutterBottom>
+//         Admin Panel – Manage Services
+//       </Typography>
+
+//       {/* Create Service Form */}
+//       <Box mb={3}>
+//         <TextField
+//           label="Title"
+//           name="title"
+//           value={form.title}
+//           onChange={handleChange}
+//           fullWidth
+//           margin="normal"
+//         />
+//         <TextField
+//           label="Description"
+//           name="description"
+//           value={form.description}
+//           onChange={handleChange}
+//           fullWidth
+//           margin="normal"
+//         />
+//         <TextField
+//           label="Required Documents (comma separated)"
+//           name="requiredDocuments"
+//           value={form.requiredDocuments}
+//           onChange={handleChange}
+//           fullWidth
+//           margin="normal"
+//         />
+//         <Button variant="contained" color="primary" onClick={handleCreate} sx={{ mt: 2 }}>
+//           Create Service
+//         </Button>
+//       </Box>
+
+//       {/* Existing Services */}
+//       <Typography variant="h5" gutterBottom>
+//         Existing Services
+//       </Typography>
+//       <Grid container spacing={3}>
+//         {services.map((s) => (
+//           <Grid item xs={12} sm={6} md={4} key={s.serviceId}>
+//             <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
+//               <CardContent>
+//                 <Typography variant="h6" gutterBottom>
+//                   {s.title}
+//                 </Typography>
+//                 <Typography variant="body2" color="text.secondary" paragraph>
+//                   {s.description}
+//                 </Typography>
+//                 <Typography variant="subtitle2"  >Required Documents:</Typography>
+//                 <List dense>
+//                   {s.requiredDocuments.map((doc, i) => (
+//                     <ListItem key={i} sx={{ pl: 2 }}>
+//                       <ListItemText primary={`• ${doc}`} />
+//                     </ListItem>
+//                   ))}
+//                 </List>
+//               </CardContent>
+//               <CardActions>
+//                 <Button
+//                   variant="outlined"
+//                   color="error"
+//                   startIcon = {<DeleteIcon />}
+//                   onClick={() => handleDelete(s.serviceId)}
+//                   >
+//                     Delete
+//                 </Button>
+//               </CardActions>
+//             </Card>
+//           </Grid>
+//         ))}
+//       </Grid>
+//     </Box>
+//   );
+// }
+
+// export default AdminPanel;
+
+
+
 // src/pages/AdminPanel.js
 import React, { useEffect, useState, useContext } from "react";
 import {
@@ -12,15 +167,26 @@ import {
   ListItem,
   ListItemText,
   CardActions,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import api from "../services/api";
-import DeleteIcon from '@mui/icons-material/Delete';
 import AuthContext from "../context/authContext";
 
 function AdminPanel() {
   const { user } = useContext(AuthContext);
   const [services, setServices] = useState([]);
   const [form, setForm] = useState({ title: "", description: "", requiredDocuments: "" });
+  const [editingService, setEditingService] = useState(null);
+
+  // Delete confirmation dialog state
+  const [openDelete, setOpenDelete] = useState(false);
+  const [selectedService, setSelectedService] = useState(null);
 
   useEffect(() => {
     fetchServices();
@@ -39,25 +205,39 @@ function AdminPanel() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleCreate = async () => {
+  const handleSubmit = async () => {
     try {
-      await api.post(
-        "/services",
-        {
-          serviceId: Date.now().toString(),
-          title: form.title,
-          description: form.description,
-          requiredDocuments: form.requiredDocuments.split(",").map((doc) => doc.trim()),
-        },
-        {
+      const payload = {
+        title: form.title,
+        description: form.description,
+        requiredDocuments: form.requiredDocuments.split(",").map((doc) => doc.trim()),
+      };
+
+      if (editingService) {
+        // Update service
+        await api.put(`/services/${editingService.serviceId}`, payload, {
           headers: { Authorization: `Bearer ${user.token}` },
-        }
-      );
+        });
+      } else {
+        // Create new service
+        await api.post(
+          "/services",
+          { ...payload, serviceId: Date.now().toString() },
+          { headers: { Authorization: `Bearer ${user.token}` } }
+        );
+      }
+
       setForm({ title: "", description: "", requiredDocuments: "" });
+      setEditingService(null);
       fetchServices();
     } catch (err) {
-      console.error("Error creating service:", err);
+      console.error("Error saving service:", err);
     }
+  };
+
+  const confirmDelete = (service) => {
+    setSelectedService(service);
+    setOpenDelete(true);
   };
 
   const handleDelete = async (serviceId) => {
@@ -66,9 +246,26 @@ function AdminPanel() {
         headers: { Authorization: `Bearer ${user.token}` },
       });
       setServices(services.filter((s) => s.serviceId !== serviceId));
+      setOpenDelete(false);
+      setSelectedService(null);
     } catch (err) {
       console.error("Error deleting service:", err);
     }
+  };
+
+  const startEdit = (service) => {
+    setEditingService(service);
+    setForm({
+      title: service.title,
+      description: service.description,
+      requiredDocuments: service.requiredDocuments.join(", "),
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const cancelEdit = () => {
+    setEditingService(null);
+    setForm({ title: "", description: "", requiredDocuments: "" });
   };
 
   return (
@@ -77,8 +274,11 @@ function AdminPanel() {
         Admin Panel – Manage Services
       </Typography>
 
-      {/* Create Service Form */}
+      {/* Create/Edit Service Form */}
       <Box mb={3}>
+        <Typography variant="h6" gutterBottom>
+          {editingService ? "Edit Service" : "Create New Service"}
+        </Typography>
         <TextField
           label="Title"
           name="title"
@@ -103,9 +303,16 @@ function AdminPanel() {
           fullWidth
           margin="normal"
         />
-        <Button variant="contained" color="primary" onClick={handleCreate} sx={{ mt: 2 }}>
-          Create Service
-        </Button>
+        <Box mt={2}>
+          <Button variant="contained" color="primary" onClick={handleSubmit}>
+            {editingService ? "Update Service" : "Create Service"}
+          </Button>
+          {editingService && (
+            <Button onClick={cancelEdit} sx={{ ml: 2 }}>
+              Cancel
+            </Button>
+          )}
+        </Box>
       </Box>
 
       {/* Existing Services */}
@@ -135,17 +342,48 @@ function AdminPanel() {
               <CardActions>
                 <Button
                   variant="outlined"
+                  color="primary"
+                  startIcon={<EditIcon />}
+                  onClick={() => startEdit(s)}
+                >
+                  Edit
+                </Button>
+                <Button
+                  variant="outlined"
                   color="error"
-                  startIcon = {<DeleteIcon />}
-                  onClick={() => handleDelete(s.serviceId)}
-                  >
-                    Delete
+                  startIcon={<DeleteIcon />}
+                  onClick={() => confirmDelete(s)}
+                >
+                  Delete
                 </Button>
               </CardActions>
             </Card>
           </Grid>
         ))}
       </Grid>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={openDelete} onClose={() => setOpenDelete(false)}>
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete <strong>{selectedService?.title}</strong>? This action
+            cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDelete(false)} color="primary">
+            Cancel
+          </Button>
+          <Button
+            onClick={() => handleDelete(selectedService?.serviceId)}
+            color="error"
+            variant="contained"
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
