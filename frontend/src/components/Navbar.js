@@ -19,9 +19,20 @@ const Navbar = () => {
                     Setu Seva Kendra
                 </Typography>
                 {user ? (
-                    <Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Typography sx={{ mr: 2 }}>
+                            Welcome, {user.name}
+                        </Typography>
                         <Button color="inherit" component={Link} to="/dashboard">Dashboard</Button>
                         <Button color="inherit" component={Link} to="/my-applications">My Applications</Button>
+                        
+                        {/* Conditionally render the admin link */}
+                        {user.role === 'admin' && (
+                            <Button color="inherit" component={Link} to="/admin">
+                                Admin Panel
+                            </Button>
+                        )}
+                        
                         <Button color="inherit" onClick={handleLogout}>Logout</Button>
                     </Box>
                 ) : (

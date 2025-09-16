@@ -6,7 +6,7 @@ const Home = () => {
     return (
         <Box sx={{ textAlign: 'center', mt: 8 }}>
             <Typography variant="h2" component="h1" gutterBottom>
-                Welcome to Setu Seva Kendra Portal
+                Welcome to Sai Setu Portal
             </Typography>
             <Typography variant="h5" color="text.secondary" paragraph>
                 Your one-stop solution for all government services.
