@@ -11,8 +11,10 @@ import {
   List,
   ListItem,
   ListItemText,
+  CardActions,
 } from "@mui/material";
 import api from "../services/api";
+import DeleteIcon from '@mui/icons-material/Delete';
 import AuthContext from "../context/authContext";
 
 function AdminPanel() {
@@ -55,6 +57,17 @@ function AdminPanel() {
       fetchServices();
     } catch (err) {
       console.error("Error creating service:", err);
+    }
+  };
+
+  const handleDelete = async (serviceId) => {
+    try {
+      await api.delete(`/services/${serviceId}`, {
+        headers: { Authorization: `Bearer ${user.token}` },
+      });
+      setServices(services.filter((s) => s.serviceId !== serviceId));
+    } catch (err) {
+      console.error("Error deleting service:", err);
     }
   };
 
@@ -119,6 +132,16 @@ function AdminPanel() {
                   ))}
                 </List>
               </CardContent>
+              <CardActions>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  startIcon = {<DeleteIcon />}
+                  onClick={() => handleDelete(s.serviceId)}
+                  >
+                    Delete
+                </Button>
+              </CardActions>
             </Card>
           </Grid>
         ))}
