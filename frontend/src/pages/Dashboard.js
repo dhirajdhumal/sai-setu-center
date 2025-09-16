@@ -1,13 +1,20 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Grid, Card, CardContent, Typography,  List,
+import {
+  Grid,
+  Card,
+  CardContent,
+  Typography,
+  List,
   ListItem,
-  ListItemText, Box } from "@mui/material";
+  ListItemText,
+  Box,
+} from "@mui/material";
 import api from "../services/api";
 import AuthContext from "../context/authContext";
 
 function Dashboard() {
   const [services, setServices] = useState([]);
-  const {user} = useContext(AuthContext)
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -37,12 +44,14 @@ function Dashboard() {
                 <Typography variant="body2" color="text.secondary" paragraph>
                   {s.description}
                 </Typography>
-                <Typography variant="subtitle2">Required Documents:</Typography>
+                <Typography variant="subtitle2">आवश्यक कागदपत्रे</Typography>
                 <List dense>
                   {s.requiredDocuments.map((doc, i) => (
-                    <Typography color="text.secondary"><ListItem key={i} sx={{ pl: 2 }}>
-                      <ListItemText primary={`• ${doc}`} />
-                    </ListItem></Typography>
+                    <Typography color="text.secondary">
+                      <ListItem key={i} sx={{ pl: 2 }}>
+                        <ListItemText primary={`• ${doc}`} />
+                      </ListItem>
+                    </Typography>
                   ))}
                 </List>
               </CardContent>
