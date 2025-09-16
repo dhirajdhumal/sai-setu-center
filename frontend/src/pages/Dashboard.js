@@ -1,51 +1,55 @@
-import React, { useState, useEffect } from 'react';
-import { Grid, Typography, CircularProgress, Box } from '@mui/material';
-import api from '../services/api';
-import ServiceCard from '../components/ServiceCard';
+import React, { useEffect, useState } from "react";
+import { Grid, Card, CardContent, Typography,  List,
+  ListItem,
+  ListItemText, Box } from "@mui/material";
+import api from "../services/api";
 
-const Dashboard = () => {
-    const [services, setServices] = useState([]);
-    const [loading, setLoading] = useState(true);
+function Dashboard() {
+  const [services, setServices] = useState([]);
 
-    useEffect(() => {
-        const fetchServices = async () => {
-            try {
-                const { data } = await api.get('/services');
-                setServices(data);
-            } catch (error) {
-                console.error('Failed to fetch services:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const res = await api.get("/services");
+        setServices(res.data);
+      } catch (err) {
+        console.error("Error fetching services:", err);
+      }
+    };
+    fetchServices();
+  }, []);
 
-        fetchServices();
-    }, []);
-
-    if (loading) {
-        return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-                <CircularProgress />
-            </Box>
-        );
-    }
-
-    return (
-        <div>
-            <Typography variant="h4" gutterBottom>
-                Available Services For You Only
-            </Typography>
-            <Grid container spacing={3}>
-                {services.map(service => (
-                    <Grid item key={service._id} xs={12} sm={6} md={4}>
-                        <ServiceCard service={service} />
-                    </Grid>
-                ))}
-            </Grid>
-        </div>
-    );
-};
+  return (
+    <Box mt={4}>
+      <Typography variant="h4" gutterBottom>
+        Available Services
+      </Typography>
+      <Grid container spacing={3}>
+        {services.map((s) => (
+          <Grid item xs={12} sm={6} md={4} key={s.serviceId}>
+            <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  {s.title}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" paragraph>
+                  {s.description}
+                </Typography>
+                <Typography variant="subtitle2">Required Documents:</Typography>
+                <List dense>
+                  {s.requiredDocuments.map((doc, i) => (
+                    <ListItem key={i} sx={{ pl: 2 }}>
+                      <ListItemText primary={`• ${doc}`} />
+                    </ListItem>
+                  ))}
+                </List>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
+  );
+}
 
 export default Dashboard;
-
-

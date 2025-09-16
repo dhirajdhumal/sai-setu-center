@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import AdminPanel from './pages/AdminPanel';
 import Apply from './pages/Apply';
 import MyApplications from './pages/MyApplication';
 import './App.css';
@@ -27,6 +28,15 @@ function App() {
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/apply/:serviceId" element={<ProtectedRoute><Apply /></ProtectedRoute>} />
             <Route path="/my-applications" element={<ProtectedRoute><MyApplications /></ProtectedRoute>} />
+            <Route
+  path="/admin"
+  element={
+    <ProtectedRoute adminOnly={true}>
+      <AdminPanel />
+    </ProtectedRoute>
+  }
+/>
+
           </Routes>
         </Container>
       </main>
