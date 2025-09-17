@@ -8,10 +8,20 @@ const ApplicationSchema = new mongoose.Schema({
         enum: ['Submitted', 'In Progress', 'Completed', 'Rejected'],
         default: 'Submitted'
     },
-    formData: { type: mongoose.Schema.Types.Mixed, required: true }, // For flexible form data
+    mobileNumber: {
+        type: String,
+        required: true,
+        validate: {
+            validator: function(v) {
+                // Basic regex for 10-digit mobile numbers
+                return /^\d{10}$/.test(v);
+            },
+            message: props => `${props.value} is not a valid 10-digit mobile number!`
+        }
+    },
     documents: [{
-        fieldName: String, // e.g., 'aadhaarCard'
-        filePath: String   // e.g., '/uploads/aadhaar-12345.pdf'
+        fieldName: String,
+        filePath: String
     }]
 }, { timestamps: true });
 

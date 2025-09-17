@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 // Import the Alert component for displaying messages
 import { TextField, Button, Typography, Container, Box, Alert } from '@mui/material';
-import AuthContext from '../context/authContext';
+import AuthContext from '../../context/authContext';
 
 const Register = () => {
     const [name, setName] = useState('');

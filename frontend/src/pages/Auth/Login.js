@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 // Step 1: Import the Alert component
 import { TextField, Button, Typography, Container, Box, Alert } from '@mui/material';
-import AuthContext from '../context/authContext';
+import AuthContext from '../../context/authContext';
 
 const Login = () => {
     const [email, setEmail] = useState('');

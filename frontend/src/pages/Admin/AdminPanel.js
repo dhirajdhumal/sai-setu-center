@@ -16,23 +16,27 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  CircularProgress,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import api from "../services/api";
-import AuthContext from "../context/authContext";
+import { useNavigate } from "react-router-dom";
+import api from "../../services/api";
+import AuthContext from "../../context/authContext";
 
 function AdminPanel() {
   const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
+
   const [services, setServices] = useState([]);
+  const [loadingServices, setLoadingServices] = useState(true);
+
   const [form, setForm] = useState({
     title: "",
     description: "",
     requiredDocuments: "",
   });
   const [editingService, setEditingService] = useState(null);
-
-  // Delete confirmation dialog state
   const [openDelete, setOpenDelete] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
 
@@ -40,12 +44,15 @@ function AdminPanel() {
     fetchServices();
   }, []);
 
+  // Fetch services
   const fetchServices = async () => {
     try {
       const { data } = await api.get("/services");
       setServices(data);
     } catch (err) {
       console.error("Error fetching services:", err);
+    } finally {
+      setLoadingServices(false);
     }
   };
 
@@ -58,18 +65,14 @@ function AdminPanel() {
       const payload = {
         title: form.title,
         description: form.description,
-        requiredDocuments: form.requiredDocuments
-          .split(",")
-          .map((doc) => doc.trim()),
+        requiredDocuments: form.requiredDocuments.split(",").map((doc) => doc.trim()),
       };
 
       if (editingService) {
-        // Update service
         await api.put(`/services/${editingService.serviceId}`, payload, {
           headers: { Authorization: `Bearer ${user.token}` },
         });
       } else {
-        // Create new service
         await api.post(
           "/services",
           { ...payload, serviceId: Date.now().toString() },
@@ -170,49 +173,62 @@ function AdminPanel() {
         Existing Services
       </Typography>
       <Grid container spacing={3}>
-        {services.map((s) => (
-          <Grid item xs={12} sm={6} md={4} key={s.serviceId}>
-            <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  {s.title}
-                </Typography>
-                <Typography variant="body2" color="text.secondary" paragraph>
-                  {s.description}
-                </Typography>
-                <Typography variant="subtitle2">आवश्यक कागदपत्रे</Typography>
-                <List dense>
-                  {s.requiredDocuments.map((doc, i) => (
-                    <Typography color="text.secondary">
+        {loadingServices ? (
+          <CircularProgress />
+        ) : (
+          services.map((s) => (
+            <Grid item xs={12} sm={6} md={4} key={s.serviceId}>
+              <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    {s.title}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" paragraph>
+                    {s.description}
+                  </Typography>
+                  <Typography variant="subtitle2">Required Documents</Typography>
+                  <List dense>
+                    {s.requiredDocuments.map((doc, i) => (
                       <ListItem key={i} sx={{ pl: 2 }}>
                         <ListItemText primary={`• ${doc}`} />
                       </ListItem>
-                    </Typography>
-                  ))}
-                </List>
-              </CardContent>
-              <CardActions>
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  startIcon={<EditIcon />}
-                  onClick={() => startEdit(s)}
-                >
-                  Edit
-                </Button>
-                <Button
-                  variant="outlined"
-                  color="error"
-                  startIcon={<DeleteIcon />}
-                  onClick={() => confirmDelete(s)}
-                >
-                  Delete
-                </Button>
-              </CardActions>
-            </Card>
-          </Grid>
-        ))}
+                    ))}
+                  </List>
+                </CardContent>
+                <CardActions>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    startIcon={<EditIcon />}
+                    onClick={() => startEdit(s)}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    startIcon={<DeleteIcon />}
+                    onClick={() => confirmDelete(s)}
+                  >
+                    Delete
+                  </Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          ))
+        )}
       </Grid>
+
+      {/* Button to navigate to Submitted Applications */}
+      <Box mt={5}>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={() => navigate("/submitted-applications")}
+        >
+          View Users Applications
+        </Button>
+      </Box>
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={openDelete} onClose={() => setOpenDelete(false)}>
