@@ -97,7 +97,7 @@ function SubmittedApplications() {
               <TableRow key={app._id}>
                 <TableCell>{app.user?.name || "N/A"}</TableCell>
                 <TableCell>{app.service?.title || "N/A"}</TableCell>
-                <TableCell>{app.mobileNumber || '-'}</TableCell>
+                <TableCell>{app.mobileNumber || "-"}</TableCell>
                 <TableCell>
                   <Select
                     value={app.status || "Submitted"}
@@ -112,27 +112,27 @@ function SubmittedApplications() {
                   </Select>
                 </TableCell>
                 <TableCell>
-  <List dense>
-    {(app.documents || []).map((doc, i) => {
-      if (!doc.filePath) return null; // skip if filePath is undefined
+                  <List dense>
+                    {(app.documents || []).map((doc, i) => {
+                      if (!doc.filePath) return null; // skip if filePath is undefined
 
-      // Extract filename from path
-      const fileName = doc.filePath.split('/').pop();
+                      // Extract filename from path
+                      const fileName = doc.filePath.split("/").pop();
 
-      return (
-        <ListItem key={i}>
-          <a
-            href={`/${doc.filePath}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {fileName} {/* Show only the filename */}
-          </a>
-        </ListItem>
-      );
-    })}
-  </List>
-</TableCell>
+                      return (
+                        <ListItem key={i}>
+                          <a
+                            href={`/${doc.filePath}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {fileName} {/* Show only the filename */}
+                          </a>
+                        </ListItem>
+                      );
+                    })}
+                  </List>
+                </TableCell>
 
                 <TableCell>
                   {app.createdAt

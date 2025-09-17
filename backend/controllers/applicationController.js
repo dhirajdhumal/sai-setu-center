@@ -8,7 +8,9 @@ exports.createApplication = async (req, res) => {
     const { service, mobileNumber } = req.body;
 
     if (!service || !mobileNumber) {
-      return res.status(400).json({ message: "Service and form data are required" });
+      return res
+        .status(400)
+        .json({ message: "Service and form data are required" });
     }
 
     // Validate service ID
@@ -16,11 +18,10 @@ exports.createApplication = async (req, res) => {
       return res.status(400).json({ message: "Invalid service ID" });
     }
 
-    const documents = (req.files || []).map(file => ({
-  fieldName: file.fieldname,
-  filePath: file.path,
-}));
-
+    const documents = (req.files || []).map((file) => ({
+      fieldName: file.fieldname,
+      filePath: file.path,
+    }));
 
     const newApplication = new Application({
       user: req.user._id,
@@ -33,19 +34,42 @@ exports.createApplication = async (req, res) => {
     res.status(201).json(savedApp);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Error creating application", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Error creating application", error: err.message });
+  }
+};
+
+exports.updateApplication = async (req, res) => {
+  try {
+    const updatedApplication = await Application.findOneAndUpdate(
+      { _id: req.params.id },
+      req.body,
+      { new: true, runValidators: true }
+    ).populate("service");
+    if (!updatedApplication) {
+      return res.status(404).json({ message: "Application not found" });
+    }
+
+    res.status(200).json(updatedApplication);
+  } catch (err) {
+    res.status(500).json({ message: "Error For Updation", error: err.message });
   }
 };
 
 // Get logged-in user's applications
 exports.getUserApplications = async (req, res) => {
   try {
-    const apps = await Application.find({ user: req.user._id })
-      .populate("service", "title description fees");
+    const apps = await Application.find({ user: req.user._id }).populate(
+      "service",
+      "title description fees"
+    );
     res.status(200).json(apps);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Error fetching applications", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Error fetching applications", error: err.message });
   }
 };
 
@@ -58,7 +82,9 @@ exports.getAllApplications = async (req, res) => {
     res.status(200).json(apps);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Error fetching applications", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Error fetching applications", error: err.message });
   }
 };
 
@@ -90,6 +116,8 @@ exports.updateApplicationStatus = async (req, res) => {
     res.status(200).json(updatedApp);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Error updating status", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Error updating status", error: err.message });
   }
 };

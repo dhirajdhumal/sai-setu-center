@@ -4,6 +4,7 @@ const {
   createApplication,
   getUserApplications,
   getAllApplications,
+  updateApplication,
   updateApplicationStatus,
 } = require("../controllers/applicationController");
 const { protect, adminOnly } = require("../middleware/authMiddleware");
@@ -34,6 +35,7 @@ router
   .get(protect, adminOnly, getAllApplications);   // get all applications for admin
 
 router.route("/my").get(protect, getUserApplications); // get user applications
+router.route("/:id").put(protect, updateApplication);
 
 // Update application status
 router.route("/:id/status").put(protect, adminOnly, updateApplicationStatus);

@@ -65,7 +65,9 @@ function AdminPanel() {
       const payload = {
         title: form.title,
         description: form.description,
-        requiredDocuments: form.requiredDocuments.split(",").map((doc) => doc.trim()),
+        requiredDocuments: form.requiredDocuments
+          .split(",")
+          .map((doc) => doc.trim()),
       };
 
       if (editingService) {
@@ -123,9 +125,23 @@ function AdminPanel() {
 
   return (
     <Box>
-      <Typography variant="h4" gutterBottom>
-        Admin Panel – Manage Services
-      </Typography>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={3}
+      >
+        <Typography variant="h4" gutterBottom>
+          Admin Panel – Manage Services
+          </Typography>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => navigate("/submitted-applications")}
+            >
+              View Users Applications
+            </Button>
+      </Box>
 
       {/* Create/Edit Service Form */}
       <Box mb={3}>
@@ -186,7 +202,9 @@ function AdminPanel() {
                   <Typography variant="body2" color="text.secondary" paragraph>
                     {s.description}
                   </Typography>
-                  <Typography variant="subtitle2">Required Documents</Typography>
+                  <Typography variant="subtitle2">
+                    Required Documents
+                  </Typography>
                   <List dense>
                     {s.requiredDocuments.map((doc, i) => (
                       <ListItem key={i} sx={{ pl: 2 }}>
@@ -220,15 +238,6 @@ function AdminPanel() {
       </Grid>
 
       {/* Button to navigate to Submitted Applications */}
-      <Box mt={5}>
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={() => navigate("/submitted-applications")}
-        >
-          View Users Applications
-        </Button>
-      </Box>
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={openDelete} onClose={() => setOpenDelete(false)}>
