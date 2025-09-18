@@ -18,11 +18,9 @@ exports.createApplication = async (req, res) => {
       return res.status(400).json({ message: "Invalid service ID" });
     }
 
-    // Build documents array from uploaded files
     const documents = (req.files || []).map((file) => ({
       fieldName: file.fieldname,
-      filePath: file.path, // now Cloudinary secure_url
-      publicId: file.filename, // add public_id if you want to manage/delete later
+      filePath: file.path,
     }));
 
     const newApplication = new Application({
@@ -36,13 +34,11 @@ exports.createApplication = async (req, res) => {
     res.status(201).json(savedApp);
   } catch (err) {
     console.error(err);
-    res.status(500).json({
-      message: "Error creating application",
-      error: err.message,
-    });
+    res
+      .status(500)
+      .json({ message: "Error creating application", error: err.message });
   }
 };
-
 
 exports.updateApplication = async (req, res) => {
   try {
