@@ -20,11 +20,12 @@ import {
   CardContent,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import api from "../../services/api";
 
 const MyApplications = () => {
   const [applications, setApplications] = useState([]);
-  const [services, setServices] = useState([]); // ✅ fetch services for dropdown
+  const [services, setServices] = useState([]);
   const [editingApplication, setEditingApplication] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -46,7 +47,7 @@ const MyApplications = () => {
     }
   };
 
-  // Fetch services (for dropdown)
+  // Fetch services for dropdown
   const fetchServices = async () => {
     try {
       const { data } = await api.get("/services");
@@ -83,7 +84,7 @@ const MyApplications = () => {
     setEditingApplication(application);
     setForm({
       mobileNumber: application.mobileNumber || "",
-      service: application.service?._id || "", // ✅ store ID, not title
+      service: application.service?._id || "",
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -93,12 +94,10 @@ const MyApplications = () => {
     setForm({ mobileNumber: "", service: "" });
   };
 
-  // Save changes
   const handleUpdate = async () => {
     try {
       const { _id } = editingApplication;
       const { data } = await api.put(`/applications/${_id}`, form);
-
       setApplications((prev) =>
         prev.map((app) => (app._id === _id ? data : app))
       );
@@ -122,7 +121,7 @@ const MyApplications = () => {
         My Applications
       </Typography>
 
-      {/* ✅ Edit Application Form (like AdminPanel style) */}
+      {/* Edit Form */}
       {editingApplication && (
         <Card sx={{ mb: 3, borderRadius: 3, boxShadow: 3 }}>
           <CardContent>
@@ -207,15 +206,36 @@ const MyApplications = () => {
                       {(app.documents || []).map((doc, i) => {
                         if (!doc.filePath) return null;
                         const fileName = doc.filePath.split("/").pop();
+
+                        // Check if it's an image
+                        const isImage = /\.(jpg|jpeg|png|gif)$/i.test(doc.filePath);
+
                         return (
-                          <ListItem key={i}>
-                            <a
-                              href={`/${doc.filePath}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              {fileName}
-                            </a>
+                          <ListItem
+                            key={i}
+                            sx={{ display: "flex", alignItems: "center" }}
+                          >
+                            <Typography sx={{ mr: 1 }}>{fileName}</Typography>
+
+                            {isImage && (
+                              <Button
+                                size="small"
+                                color="primary"
+                                onClick={() => window.open(doc.filePath, "_blank")}
+                              >
+                                <VisibilityIcon />
+                              </Button>
+                            )}
+
+                            {!isImage && (
+                              <a
+                                href={doc.filePath}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                View
+                              </a>
+                            )}
                           </ListItem>
                         );
                       })}
