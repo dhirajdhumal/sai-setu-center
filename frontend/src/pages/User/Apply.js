@@ -17,8 +17,8 @@ function Apply() {
 
   const [service, setService] = useState(null);
   const [files, setFiles] = useState({});
-  const [email, setEmail] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
+  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(true);
 
   // Fetch service details
@@ -61,7 +61,9 @@ function Apply() {
     });
 
     try {
-     await api.post("/applications", formData);
+      await api.post("/applications", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
       alert("Application submitted successfully!");
       navigate("/my-applications");

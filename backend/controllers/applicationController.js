@@ -27,7 +27,6 @@ exports.createApplication = async (req, res) => {
       user: req.user._id,
       service,
       mobileNumber,
-      email,
       documents,
     });
 

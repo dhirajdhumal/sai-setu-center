@@ -32,6 +32,7 @@ const MyApplications = () => {
   const [form, setForm] = useState({
     mobileNumber: "",
     service: "",
+    email: "",
   });
 
   // Fetch applications
@@ -84,6 +85,7 @@ const MyApplications = () => {
     setEditingApplication(application);
     setForm({
       mobileNumber: application.mobileNumber || "",
+      email: application.email || "",
       service: application.service?._id || "",
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -91,7 +93,7 @@ const MyApplications = () => {
 
   const cancelEdit = () => {
     setEditingApplication(null);
-    setForm({ mobileNumber: "", service: "" });
+    setForm({ mobileNumber: "", email: "",  service: "" });
   };
 
   const handleUpdate = async () => {
@@ -138,6 +140,17 @@ const MyApplications = () => {
               margin="normal"
             />
 
+
+            <TextField
+              label="Email Id"
+              value={form.email}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, email: e.target.value }))
+              }
+              fullWidth
+              margin="normal"
+            />
+
             <TextField
               select
               label="Service"
@@ -178,6 +191,7 @@ const MyApplications = () => {
                 <TableCell>Application Date</TableCell>
                 <TableCell>Service Name</TableCell>
                 <TableCell>Mobile Number</TableCell>
+                <TableCell>Email Id</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell>Documents</TableCell>
                 <TableCell>Submission Time</TableCell>
@@ -195,6 +209,7 @@ const MyApplications = () => {
                   </TableCell>
                   <TableCell>{app.service?.title || "N/A"}</TableCell>
                   <TableCell>{app.mobileNumber || "-"}</TableCell>
+                  <TableCell>{app.email || "-"}</TableCell>
                   <TableCell>
                     <Chip
                       label={app.status || "N/A"}
