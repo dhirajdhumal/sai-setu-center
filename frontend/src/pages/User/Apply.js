@@ -6,7 +6,7 @@ import {
   Paper,
   Grid,
   CircularProgress,
-  TextField
+  TextField,
 } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../services/api";
@@ -14,8 +14,10 @@ import api from "../../services/api";
 function Apply() {
   const { serviceId } = useParams();
   const navigate = useNavigate();
+
   const [service, setService] = useState(null);
   const [files, setFiles] = useState({});
+  const [email, setEmail] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -36,37 +38,38 @@ function Apply() {
 
   // Handle file uploads
   const handleFileChange = (e, docName) => {
-    setFiles(prev => ({ ...prev, [docName]: e.target.files[0] }));
+    setFiles((prev) => ({ ...prev, [docName]: e.target.files[0] }));
   };
 
   // Submit application
   const handleSubmit = async () => {
-  if (!mobileNumber.trim()) {
-    alert("Please enter your mobile number");
-    return;
-  }
+    if (!mobileNumber.trim() || !email.trim()) {
+      alert("Please enter both mobile number and email");
+      return;
+    }
 
-  const formData = new FormData();
-  formData.append("service", service._id); // service ID
-  formData.append("mobileNumber", mobileNumber); // just the number as string
+    const formData = new FormData();
+    formData.append("service", service._id);
+    formData.append("mobileNumber", mobileNumber);
+    formData.append("email", email);
 
-  // Append files for remaining documents
-  service.requiredDocuments.slice(1).forEach(doc => {
-    if (files[doc]) formData.append(doc, files[doc]); // use formData, not mobileNumber
-  });
-
-  try {
-    await api.post("/applications", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
+    // Append all required documents
+    service.requiredDocuments.forEach((doc) => {
+      if (files[doc]) {
+        formData.append("documents", files[doc]);
+      }
     });
-    alert("Application submitted successfully!");
-    navigate("/my-applications");
-  } catch (err) {
-    console.error("Error submitting application:", err.response || err);
-    alert("Failed to submit application");
-  }
-};
 
+    try {
+     await api.post("/applications", formData);
+
+      alert("Application submitted successfully!");
+      navigate("/my-applications");
+    } catch (err) {
+      console.error("Error submitting application:", err.response?.data || err);
+      alert("Failed to submit application");
+    }
+  };
 
   if (loading) {
     return (
@@ -88,31 +91,40 @@ function Apply() {
       </Typography>
 
       <Typography variant="h6" gutterBottom>
-        Upload Required Documents
+        Upload Required Information & Documents
       </Typography>
+
       <Grid container spacing={2}>
-        {/* First field: Mobile Number */}
+        {/* Mobile Number */}
         <Grid item xs={12}>
-          <Typography variant="subtitle1">
-            {service.requiredDocuments[0]} (Enter Mobile Number)
-          </Typography>
           <TextField
             fullWidth
             label="Mobile Number"
             variant="outlined"
             value={mobileNumber}
-            onChange={e => setMobileNumber(e.target.value)}
+            onChange={(e) => setMobileNumber(e.target.value)}
           />
         </Grid>
 
-        {/* Remaining documents as file uploads */}
-        {service.requiredDocuments.slice(1).map((doc, i) => (
+        {/* Email */}
+        <Grid item xs={12}>
+          <TextField
+            fullWidth
+            label="Email"
+            variant="outlined"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </Grid>
+
+        {/* File Uploads */}
+        {service.requiredDocuments.map((doc, i) => (
           <Grid item xs={12} key={i}>
             <Typography variant="subtitle1">{doc}</Typography>
             <input
               type="file"
               accept="image/*,application/pdf"
-              onChange={e => handleFileChange(e, doc)}
+              onChange={(e) => handleFileChange(e, doc)}
             />
           </Grid>
         ))}

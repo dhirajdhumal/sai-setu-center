@@ -5,9 +5,9 @@ const Service = require("../models/Service");
 // Create new application
 exports.createApplication = async (req, res) => {
   try {
-    const { service, mobileNumber } = req.body;
+    const { service, mobileNumber, email } = req.body;
 
-    if (!service || !mobileNumber) {
+    if (!service || !mobileNumber || !email) {
       return res
         .status(400)
         .json({ message: "Service and form data are required" });
@@ -27,6 +27,7 @@ exports.createApplication = async (req, res) => {
       user: req.user._id,
       service,
       mobileNumber,
+      email,
       documents,
     });
 

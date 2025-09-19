@@ -19,6 +19,10 @@ const ApplicationSchema = new mongoose.Schema({
             message: props => `${props.value} is not a valid 10-digit mobile number!`
         }
     },
+    email: {
+        type: String,
+        required: true,
+    },
     documents: [{
         fieldName: String,
         filePath: String
