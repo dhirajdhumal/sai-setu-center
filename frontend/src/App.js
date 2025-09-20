@@ -24,10 +24,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route
-              path="/submitted-applications"
-              element={<SubmittedApplications />}
-            />
+            
 
             {/* Protected Routes */}
             <Route
@@ -61,6 +58,12 @@ function App() {
                   <AdminPanel />
                 </ProtectedRoute>
               }
+            />
+            <Route
+              path="/submitted-applications"
+              element={<ProtectedRoute>
+                  <SubmittedApplications />
+                </ProtectedRoute>}
             />
           </Routes>
         </Container>
