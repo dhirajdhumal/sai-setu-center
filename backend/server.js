@@ -17,7 +17,7 @@ const app = express();
 
 // Middleware
 app.use(cors());
-app.use(express.json()); // Body parser for JSON
+app.use(express.json()); // Body parser for JSON                
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, {
