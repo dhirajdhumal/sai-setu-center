@@ -195,7 +195,6 @@ const MyApplications = () => {
                 <TableCell>Status</TableCell>
                 <TableCell>Documents</TableCell>
                 <TableCell>Submission Time</TableCell>
-                <TableCell align="right">Fees Paid</TableCell>
                 {hasSubmitted && <TableCell>Edit</TableCell>}
               </TableRow>
             </TableHead>
@@ -261,7 +260,7 @@ const MyApplications = () => {
                       ? new Date(app.createdAt).toLocaleString()
                       : "-"}
                   </TableCell>
-                  <TableCell align="right">₹{app.service?.fees || 0}</TableCell>
+        
                   <TableCell>
                     {app.status === "Submitted" && (
                       <Button
