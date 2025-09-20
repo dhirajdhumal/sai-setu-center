@@ -5,9 +5,9 @@ const Service = require("../models/Service");
 // Create new application
 exports.createApplication = async (req, res) => {
   try {
-    const { service, mobileNumber, email } = req.body;
+    let { service, mobileNumber, email, age, dob } = req.body;
 
-    if (!service || !mobileNumber || !email) {
+    if (!service || !mobileNumber || !email || !age ||  !dob) {
       return res
         .status(400)
         .json({ message: "Service and form data are required" });
@@ -17,6 +17,12 @@ exports.createApplication = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(service)) {
       return res.status(400).json({ message: "Invalid service ID" });
     }
+
+    const [day, month, year] = dob.split("/");
+    const dobDate = new Date(`${year}-${month}-${day}`); // YYYY-MM-DD
+
+    // Convert age to number
+    age = Number(age);
 
     const documents = (req.files || []).map((file) => ({
       fieldName: file.fieldname,
@@ -28,6 +34,8 @@ exports.createApplication = async (req, res) => {
       service,
       mobileNumber,
       email,
+      age,
+      dob: dobDate,
       documents,
     });
 

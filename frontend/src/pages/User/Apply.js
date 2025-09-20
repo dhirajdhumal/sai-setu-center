@@ -19,6 +19,8 @@ function Apply() {
   const [files, setFiles] = useState({});
   const [mobileNumber, setMobileNumber] = useState("");
   const [email, setEmail] = useState("");
+  const [age, setAge] = useState("");
+  const [dob, setDob] = useState("");
   const [loading, setLoading] = useState(true);
 
   // Fetch service details
@@ -43,7 +45,7 @@ function Apply() {
 
   // Submit application
   const handleSubmit = async () => {
-    if (!mobileNumber.trim() || !email.trim()) {
+    if (!mobileNumber.trim() || !email.trim() || !age || !dob) {
       alert("Please enter both mobile number and email");
       return;
     }
@@ -52,6 +54,8 @@ function Apply() {
     formData.append("service", service._id);
     formData.append("mobileNumber", mobileNumber);
     formData.append("email", email);
+    formData.append("age", age);
+    formData.append("dob", dob);
 
     // Append all required documents
     service.requiredDocuments.forEach((doc) => {
@@ -103,6 +107,7 @@ function Apply() {
             fullWidth
             label="Mobile Number"
             variant="outlined"
+            placeholder="9421900341"
             value={mobileNumber}
             onChange={(e) => setMobileNumber(e.target.value)}
           />
@@ -114,8 +119,31 @@ function Apply() {
             fullWidth
             label="Email"
             variant="outlined"
+            placeholder="dhiraj@gmail.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+          />
+        </Grid>
+
+        <Grid item xs={12}>
+          <TextField
+            fullWidth
+            label="Age"
+            variant="outlined"
+            placeholder="18"
+            value={age}
+            onChange={(e) => setAge(e.target.value)}
+          />
+        </Grid>
+
+        <Grid item xs={12}>
+          <TextField
+            fullWidth
+            label="DOB"
+            variant="outlined"
+            placeholder="30/07/2004"
+            value={dob}
+            onChange={(e) => setDob(e.target.value)}
           />
         </Grid>
 

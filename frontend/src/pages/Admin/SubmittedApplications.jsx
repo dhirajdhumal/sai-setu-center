@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import {
   Typography,
   Box,
+  Button,
   Table,
   TableBody,
   TableCell,
@@ -17,6 +18,7 @@ import {
 } from "@mui/material";
 import api from "../../services/api";
 import AuthContext from "../../context/authContext";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 function SubmittedApplications() {
   const { user } = useContext(AuthContext);
@@ -87,6 +89,8 @@ function SubmittedApplications() {
               <TableCell>User</TableCell>
               <TableCell>Service</TableCell>
               <TableCell>Mobile Number</TableCell>
+              <TableCell>Age</TableCell>
+              <TableCell>DOB</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Documents</TableCell>
               <TableCell>Submitted At</TableCell>
@@ -98,6 +102,13 @@ function SubmittedApplications() {
                 <TableCell>{app.user?.name || "N/A"}</TableCell>
                 <TableCell>{app.service?.title || "N/A"}</TableCell>
                 <TableCell>{app.mobileNumber || "-"}</TableCell>
+                <TableCell>{app.age || "-"}</TableCell>
+                <TableCell>
+                  {app.dob
+                    ? new Date(app.dob).toISOString().split("T")[0]
+                    : "-"}
+                </TableCell>
+
                 <TableCell>
                   <Select
                     value={app.status || "Submitted"}
@@ -111,28 +122,46 @@ function SubmittedApplications() {
                     <MenuItem value="Rejected">Rejected</MenuItem>
                   </Select>
                 </TableCell>
-                <TableCell>
-                  <List dense>
-                    {(app.documents || []).map((doc, i) => {
-                      if (!doc.filePath) return null; // skip if filePath is undefined
+                                  <TableCell>
+                    <List dense>
+                      {(app.documents || []).map((doc, i) => {
+                        if (!doc.filePath) return null;
+                        const fileName = doc.filePath.split("/").pop();
 
-                      // Extract filename from path
-                      const fileName = doc.filePath.split("/").pop();
+                        // Check if it's an image
+                        const isImage = /\.(jpg|jpeg|png|gif)$/i.test(doc.filePath);
 
-                      return (
-                        <ListItem key={i}>
-                          <a
-                            href={`/${doc.filePath}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                        return (
+                          <ListItem
+                            key={i}
+                            sx={{ display: "flex", alignItems: "center" }}
                           >
-                            {fileName} {/* Show only the filename */}
-                          </a>
-                        </ListItem>
-                      );
-                    })}
-                  </List>
-                </TableCell>
+                            <Typography sx={{ mr: 1 }}>{fileName}</Typography>
+
+                            {isImage && (
+                              <Button
+                                size="small"
+                                color="primary"
+                                onClick={() => window.open(doc.filePath, "_blank")}
+                              >
+                                <VisibilityIcon />
+                              </Button>
+                            )}
+
+                            {!isImage && (
+                              <a
+                                href={doc.filePath}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                View
+                              </a>
+                            )}
+                          </ListItem>
+                        );
+                      })}
+                    </List>
+                  </TableCell>
 
                 <TableCell>
                   {app.createdAt

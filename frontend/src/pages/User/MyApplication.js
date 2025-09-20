@@ -87,6 +87,7 @@ const MyApplications = () => {
       mobileNumber: application.mobileNumber || "",
       email: application.email || "",
       service: application.service?._id || "",
+
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -192,9 +193,9 @@ const MyApplications = () => {
                 <TableCell>Service Name</TableCell>
                 <TableCell>Mobile Number</TableCell>
                 <TableCell>Email Id</TableCell>
-                <TableCell>Status</TableCell>
                 <TableCell>Documents</TableCell>
                 <TableCell>Submission Time</TableCell>
+                <TableCell>Status</TableCell>
                 {hasSubmitted && <TableCell>Edit</TableCell>}
               </TableRow>
             </TableHead>
@@ -209,12 +210,6 @@ const MyApplications = () => {
                   <TableCell>{app.service?.title || "N/A"}</TableCell>
                   <TableCell>{app.mobileNumber || "-"}</TableCell>
                   <TableCell>{app.email || "-"}</TableCell>
-                  <TableCell>
-                    <Chip
-                      label={app.status || "N/A"}
-                      color={getStatusChipColor(app.status)}
-                    />
-                  </TableCell>
                   <TableCell>
                     <List dense>
                       {(app.documents || []).map((doc, i) => {
@@ -260,7 +255,12 @@ const MyApplications = () => {
                       ? new Date(app.createdAt).toLocaleString()
                       : "-"}
                   </TableCell>
-        
+                  <TableCell>
+                    <Chip
+                      label={app.status || "N/A"}
+                      color={getStatusChipColor(app.status)}
+                    />
+                  </TableCell>
                   <TableCell>
                     {app.status === "Submitted" && (
                       <Button
