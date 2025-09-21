@@ -72,6 +72,7 @@ function Dashboard() {
       </Grid>
     </Box>
   );
+  
 }
 
 export default Dashboard;
