@@ -128,19 +128,21 @@ function AdminPanel() {
       <Box
         display="flex"
         justifyContent="space-between"
-        alignItems="center"
+        alignItems={{ xs: "flex-start", sm: "center" }}
+        flexDirection={{ xs: "column", sm: "row" }}
         mb={3}
       >
         <Typography variant="h4" gutterBottom>
           Admin Panel – Manage Services
-          </Typography>
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={() => navigate("/submitted-applications")}
-            >
-              View Users Applications
-            </Button>
+        </Typography>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={() => navigate("/submitted-applications")}
+          sx={{ mt: { xs: 2, sm: 0 } }}
+        >
+          View Users Applications
+        </Button>
       </Box>
 
       {/* Create/Edit Service Form */}
