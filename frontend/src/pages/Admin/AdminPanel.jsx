@@ -130,17 +130,19 @@ function AdminPanel() {
         justifyContent="space-between"
         alignItems="center"
         mb={3}
+        sx={{ flexDirection: { xs: "column", sm: "row" }, gap: 2 }}
       >
-        <Typography variant="h4" gutterBottom>
+        <Typography variant="h4" gutterBottom sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
           Admin Panel – Manage Services
-          </Typography>
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={() => navigate("/submitted-applications")}
-            >
-              View Users Applications
-            </Button>
+        </Typography>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={() => navigate("/submitted-applications")}
+          sx={{ width: { xs: "100%", sm: "auto" } }}
+        >
+          View Users Applications
+        </Button>
       </Box>
 
       {/* Create/Edit Service Form */}
@@ -172,12 +174,12 @@ function AdminPanel() {
           fullWidth
           margin="normal"
         />
-        <Box mt={2}>
+        <Box mt={2} sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 2 }}>
           <Button variant="contained" color="primary" onClick={handleSubmit}>
             {editingService ? "Update Service" : "Create Service"}
           </Button>
           {editingService && (
-            <Button onClick={cancelEdit} sx={{ ml: 2 }}>
+            <Button onClick={cancelEdit} variant="outlined">
               Cancel
             </Button>
           )}
@@ -190,12 +192,14 @@ function AdminPanel() {
       </Typography>
       <Grid container spacing={3}>
         {loadingServices ? (
-          <CircularProgress />
+          <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center' }}>
+            <CircularProgress />
+          </Grid>
         ) : (
           services.map((s) => (
             <Grid item xs={12} sm={6} md={4} key={s.serviceId}>
-              <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
-                <CardContent>
+              <Card sx={{ borderRadius: 3, boxShadow: 3, display: 'flex', flexDirection: 'column', height: '100%' }}>
+                <CardContent sx={{ flexGrow: 1 }}>
                   <Typography variant="h6" gutterBottom>
                     {s.title}
                   </Typography>
@@ -213,12 +217,13 @@ function AdminPanel() {
                     ))}
                   </List>
                 </CardContent>
-                <CardActions>
+                <CardActions sx={{ p: 2, display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 1, width: '100%' }}>
                   <Button
                     variant="outlined"
                     color="primary"
                     startIcon={<EditIcon />}
                     onClick={() => startEdit(s)}
+                    fullWidth
                   >
                     Edit
                   </Button>
@@ -227,6 +232,7 @@ function AdminPanel() {
                     color="error"
                     startIcon={<DeleteIcon />}
                     onClick={() => confirmDelete(s)}
+                    fullWidth
                   >
                     Delete
                   </Button>
@@ -237,10 +243,8 @@ function AdminPanel() {
         )}
       </Grid>
 
-      {/* Button to navigate to Submitted Applications */}
-
       {/* Delete Confirmation Dialog */}
-      <Dialog open={openDelete} onClose={() => setOpenDelete(false)}>
+      <Dialog open={openDelete} onClose={() => setOpenDelete(false)} fullWidth maxWidth="xs">
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -249,14 +253,15 @@ function AdminPanel() {
             undone.
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDelete(false)} color="primary">
+        <DialogActions sx={{ p: 2, flexDirection: { xs: 'column', sm: 'row' }, gap: 1 }}>
+          <Button onClick={() => setOpenDelete(false)} color="primary" fullWidth>
             Cancel
           </Button>
           <Button
             onClick={() => handleDelete(selectedService?.serviceId)}
             color="error"
             variant="contained"
+            fullWidth
           >
             Delete
           </Button>
