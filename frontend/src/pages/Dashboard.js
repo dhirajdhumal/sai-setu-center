@@ -95,6 +95,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import AuthContext from "../context/authContext";
+import "./Dashboard.css";
 
 function Dashboard() {
   const [services, setServices] = useState([]);
@@ -113,20 +114,6 @@ function Dashboard() {
     fetchServices();
   }, []);
 
-  // Atlassian-inspired card styles
-  const cardStyles = {
-    border: "1px solid #DFE1E6", // Subtle border
-    borderRadius: "3px", // Sharper corners
-    boxShadow: "rgba(9, 30, 66, 0.25) 0px 1px 1px, rgba(9, 30, 66, 0.13) 0px 0px 1px 1px",
-    transition: "box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out",
-    height: "100%", // Ensure all cards in a row have the same height
-    display: "flex",
-    flexDirection: "column",
-    "&:hover": {
-      transform: "translateY(-2px)", // Lift effect on hover
-      boxShadow: "rgba(9, 30, 66, 0.25) 0px 4px 8px -2px, rgba(9, 30, 66, 0.08) 0px 0px 0px 1px",
-    },
-  };
 
   return (
     <Box mt={4}>
@@ -136,7 +123,7 @@ function Dashboard() {
       <Grid container spacing={3}>
         {services.map((s) => (
           <Grid item xs={12} sm={6} md={4} key={s.serviceId}>
-            <Card sx={cardStyles}>
+            <Card className="dashboard-card">
               <CardContent sx={{ flexGrow: 1 }}> {/* Makes content grow to push actions down */}
                 <Typography variant="h6" fontWeight="600" gutterBottom>
                   {s.title}
@@ -169,7 +156,7 @@ function Dashboard() {
                   ))}
                 </List>
               </CardContent>
-              <CardActions sx={{ justifyContent: "flex-end", p: 2 }}>
+              <CardActions className="card-actions-right">
                 <Button
                   size="small"
                   variant="contained"
